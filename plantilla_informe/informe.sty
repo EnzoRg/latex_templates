@@ -1,0 +1,284 @@
+% =============================================================================
+% informe.sty — Estilo para informes, trabajos prácticos y tesinas
+% Especialización y Maestría en Minería de Datos · UTN Facultad Regional Paraná
+%
+% Uso:   \usepackage[cita=apa]{informe}
+% Opciones (clave=valor):
+%   cita=apa | numerico     Estilo de citas (biblatex + biber). Por defecto: apa
+%   borrador                Marca de agua "BORRADOR" y notas \pendiente visibles
+%   sinsangria              Párrafos sin sangría, separados por un espacio
+%   interlineado=<factor>   Interlineado (1 = simple, 1.5 = uno y medio). Por defecto: 1.15
+% =============================================================================
+\NeedsTeXFormat{LaTeX2e}
+\ProvidesPackage{informe}[2026/10/02 Plantilla de informes EMMD]
+
+% ---------------------------------------------------------------- Opciones ---
+\RequirePackage{kvoptions}
+\SetupKeyvalOptions{family=INF, prefix=INF@}
+\DeclareStringOption[apa]{cita}
+\DeclareStringOption[1.15]{interlineado}
+\DeclareBoolOption{borrador}
+\DeclareBoolOption{sinsangria}
+\ProcessKeyvalOptions*
+
+% ------------------------------------------------- Motor, fuentes e idioma ---
+\RequirePackage{iftex}
+\ifPDFTeX
+  \RequirePackage[T1]{fontenc}
+  \RequirePackage{mlmodern}          % Latin Modern "más oscura" (como en la tesis)
+\else
+  \RequirePackage{fontspec}          % XeLaTeX / LuaLaTeX: se puede usar cualquier fuente del sistema
+  % \setmainfont{TeX Gyre Termes}    % <- alternativa tipo Times
+\fi
+% es-tabla: "Tabla" en lugar de "Cuadro"; es-noshorthands evita conflictos con TikZ/pgfplots;
+% es-nodecimaldot: no altera el punto en modo matemático.
+\RequirePackage[spanish, es-tabla, es-noshorthands, es-nodecimaldot]{babel}
+\RequirePackage[spanish=mexican]{csquotes}   % \enquote{...} -> “...”
+\RequirePackage{microtype}
+
+% ------------------------------------------------------------- Página -------
+\RequirePackage[a4paper, margin=25mm, headheight=14pt]{geometry}
+\RequirePackage{setspace}
+\setstretch{\INF@interlineado}
+\ifINF@sinsangria
+  \RequirePackage{parskip}
+\fi
+\RequirePackage{enumitem}
+\setlist{itemsep=2pt, topsep=4pt}
+
+% ----------------------------------------------------------- Colores -------
+\RequirePackage[dvipsnames, table]{xcolor}
+\definecolor{acento}{HTML}{1F4E79}       % azul institucional para títulos y enlaces
+\definecolor{codigofondo}{HTML}{F6F8FA}
+\definecolor{codigocomentario}{HTML}{6A737D}
+\definecolor{codigocadena}{HTML}{0B7A3E}
+\definecolor{codigoclave}{HTML}{B3125A}
+
+% ---------------------------------------------------------- Matemática -----
+\RequirePackage{mathtools, amssymb, bm}
+\RequirePackage{nicefrac, xfrac}
+\newcommand{\R}{\mathbb{R}}
+\newcommand{\N}{\mathbb{N}}
+\DeclareMathOperator{\E}{\mathbb{E}}
+\DeclareMathOperator{\Var}{Var}
+\DeclareMathOperator{\Cov}{Cov}
+\DeclareMathOperator*{\argmin}{arg\,min}
+\DeclareMathOperator*{\argmax}{arg\,max}
+\newcommand{\vect}[1]{\bm{#1}}                       % vector:  \vect{x}
+\newcommand{\mat}[1]{\bm{#1}}                        % matriz:  \mat{X}
+\DeclarePairedDelimiter{\norm}{\lVert}{\rVert}       % \norm{x}, \norm*{x}
+\DeclarePairedDelimiter{\abs}{\lvert}{\rvert}
+
+% Unidades y números: coma decimal y separador de miles con espacio fino (uso en Argentina).
+\RequirePackage{siunitx}
+\sisetup{output-decimal-marker={,}, group-separator={\,}, group-minimum-digits=4}
+% Para redondear una columna: S[round-mode=places, round-precision=3]
+
+% -------------------------------------------------- Figuras y tablas -------
+\RequirePackage{graphicx}
+\graphicspath{{imagenes/}{figuras/}}
+\RequirePackage{caption, subcaption}
+\captionsetup{font=small, labelfont=bf, labelsep=period}
+\RequirePackage{float}
+\RequirePackage{booktabs, tabularx, multirow, makecell, longtable, threeparttable}
+\RequirePackage{pgfplots, pgfplotstable}
+\pgfplotsset{compat=1.18, /pgf/number format/use comma, /pgf/number format/1000 sep={\,}}
+\usetikzlibrary{arrows.meta, positioning, shapes.geometric, fit, calc}
+
+% Tabla a partir de un CSV (p. ej. exportado con pandas):  \tablacsv{datos/archivo.csv}
+% La primera columna se toma como texto y el resto como números con 3 decimales y coma.
+% Opciones adicionales de pgfplotstable en [ ], p. ej. [precision=2] o [columns={A,B}].
+\newcommand{\tablacsv}[2][]{%
+  \pgfplotstabletypeset[col sep=comma, fixed, fixed zerofill, precision=3,
+    display columns/0/.style={string type, column type=l},
+    every head row/.style={before row=\toprule, after row=\midrule},
+    every last row/.style={after row=\bottomrule}, #1]{#2}}
+
+% ------------------------------------------------------------- Código ------
+\RequirePackage{listings}
+\lstset{
+  basicstyle=\ttfamily\small, columns=fullflexible, keepspaces=true,
+  backgroundcolor=\color{codigofondo}, frame=single, rulecolor=\color{black!15},
+  framesep=4pt, xleftmargin=6pt, xrightmargin=6pt,
+  numbers=left, numberstyle=\tiny\color{codigocomentario}, numbersep=8pt,
+  breaklines=true, breakatwhitespace=true, showstringspaces=false, tabsize=4,
+  keywordstyle=\color{codigoclave}\bfseries, commentstyle=\color{codigocomentario}\itshape,
+  stringstyle=\color{codigocadena}, captionpos=t,
+  % Acentos y eñes dentro del código con pdfLaTeX
+  literate={á}{{\'a}}1 {é}{{\'e}}1 {í}{{\'i}}1 {ó}{{\'o}}1 {ú}{{\'u}}1
+           {Á}{{\'A}}1 {É}{{\'E}}1 {Í}{{\'I}}1 {Ó}{{\'O}}1 {Ú}{{\'U}}1
+           {ñ}{{\~n}}1 {Ñ}{{\~N}}1 {ü}{{\"u}}1 {¿}{{?`}}1 {¡}{{!`}}1
+           {±}{{$\pm$}}1 {°}{{\textdegree}}1 {º}{{\textordmasculine}}1 {ª}{{\textordfeminine}}1
+           {≤}{{$\leq$}}1 {≥}{{$\geq$}}1 {≠}{{$\neq$}}1 {→}{{$\rightarrow$}}1 {€}{{\texteuro}}1
+}
+% SQL con el dialecto de MySQL y palabras clave habituales del curso
+\lstdefinelanguage{MySQL}[]{SQL}{
+  morekeywords={AUTO_INCREMENT, ENGINE, InnoDB, CHARSET, IF, EXISTS, USE, SHOW,
+                CONSTRAINT, REFERENCES, CHECK, ENUM, LIMIT, WINDOW, OVER, PARTITION,
+                WITH, RECURSIVE, ROW_NUMBER, RANK, DENSE_RANK, LAG, LEAD, EXPLAIN, ANALYZE},
+  sensitive=false
+}
+\lstdefinestyle{sql}{language=MySQL}
+\lstdefinestyle{python}{language=Python,
+  morekeywords={as, with, None, True, False, self, lambda, yield, async, await}}
+\lstdefinestyle{r}{language=R}
+\lstdefinestyle{consola}{language={}, numbers=none, backgroundcolor=\color{black!80},
+  basicstyle=\ttfamily\small\color{white}, frame=none}
+\renewcommand{\lstlistingname}{Código}
+\renewcommand{\lstlistlistingname}{Índice de códigos}
+
+% -------------------------------------------------------- Algoritmos -------
+\RequirePackage[spanish, ruled, vlined, linesnumbered]{algorithm2e}
+\SetKwInput{KwIn}{Entrada}
+\SetKwInput{KwOut}{Salida}
+
+% ------------------------------------------------- Recuadros (tcolorbox) ---
+\RequirePackage[most]{tcolorbox}
+\newtcolorbox{nota}[1][Nota]{colback=acento!5, colframe=acento, fonttitle=\bfseries,
+  title=#1, arc=2pt, boxrule=0.6pt, left=6pt, right=6pt}
+\newtcolorbox{importante}[1][Importante]{colback=red!4, colframe=BrickRed,
+  fonttitle=\bfseries, title=#1, arc=2pt, boxrule=0.6pt, left=6pt, right=6pt}
+
+% ----------------------------------------------------------- Acrónimos -----
+\RequirePackage[printonlyused, withpage]{acronym}
+% Si una sigla aparece primero en un índice (p. ej. en un \caption), acronym anula su
+% etiqueta; también hay que anular la copia que genera cleveref (evita "multiply defined").
+\renewcommand*\AC@undonewlabel[1]{\AC@und@newl@bel rs{#1}\AC@und@newl@bel rs{#1@cref}}
+
+% ------------------------------------------------------- Bibliografía ------
+\def\INF@apa{apa}
+\ifx\INF@cita\INF@apa
+  \RequirePackage[backend=biber, style=apa]{biblatex}
+\else
+  \RequirePackage[backend=biber, style=numeric-comp, sorting=none]{biblatex}
+\fi
+
+% ------------------------------------------------- Borrador / pendientes ---
+\ifINF@borrador
+  \RequirePackage[text=BORRADOR, color=black!6, scale=0.9]{draftwatermark}
+  \newcommand{\pendiente}[1]{\textcolor{red}{\textbf{[PENDIENTE:} #1\textbf{]}}}
+\else
+  \newcommand{\pendiente}[1]{}
+\fi
+
+% ----------------------------------------------------- Datos del documento -
+% Se completan en datos.tex y se usan en la portada, encabezados y metadatos del PDF.
+\newcommand{\INF@campo}[1]{%
+  \expandafter\def\csname INF@#1\endcsname{}%
+  \expandafter\newcommand\csname #1\endcsname[1]{\expandafter\def\csname INF@#1\endcsname{##1}}}
+\INF@campo{universidad}
+\INF@campo{facultad}
+\INF@campo{carrera}
+\INF@campo{materia}
+\INF@campo{tipodocumento}
+\INF@campo{titulo}
+\INF@campo{subtitulo}
+\INF@campo{autores}
+\INF@campo{docentes}
+\INF@campo{rotuloautores}
+\INF@campo{rotulodocentes}
+\INF@campo{fecha}
+\INF@campo{logo}
+\INF@campo{palabrasclave}
+\INF@campo{autorespdf}
+\rotuloautores{Autor}
+\rotulodocentes{Docentes}
+\fecha{\today}
+\newcommand{\eltitulo}{\INF@titulo}
+\newcommand{\lamateria}{\INF@materia}
+\newcommand{\eltipodocumento}{\INF@tipodocumento}
+\newcommand{\lafecha}{\INF@fecha}
+
+% ------------------------------------------------------------- Portada -----
+\newcommand{\portada}{%
+  \begin{titlepage}
+    \centering
+    {\Large\scshape \INF@universidad\par}
+    \vspace{2mm}
+    {\Large\scshape \INF@facultad\par}
+    \vspace{10mm}
+    \ifx\INF@logo\@empty\else\includegraphics[height=40mm]{\INF@logo}\par\fi
+    \vspace{10mm}
+    {\large\bfseries \INF@carrera\par}
+    \vspace{2mm}
+    {\large \INF@materia\par}
+    \vspace{12mm}
+    {\Large\bfseries \INF@tipodocumento\par}
+    \vspace{3mm}
+    {\color{acento}\rule{\linewidth}{0.6mm}}\par
+    \vspace{4mm}
+    {\setstretch{1.3}\LARGE\scshape\color{acento} \INF@titulo\par}
+    \ifx\INF@subtitulo\@empty\else\vspace{3mm}{\large\itshape \INF@subtitulo\par}\fi
+    \vspace{4mm}
+    {\color{acento}\rule{\linewidth}{0.6mm}}\par
+    \vspace{12mm}
+    {\large\bfseries \INF@rotuloautores\par}
+    \vspace{1mm}
+    {\large \INF@autores\par}
+    \ifx\INF@docentes\@empty\else
+      \vspace{8mm}
+      {\large\bfseries \INF@rotulodocentes\par}
+      \vspace{1mm}
+      {\large \INF@docentes\par}
+    \fi
+    \vfill
+    {\large \INF@fecha\par}
+  \end{titlepage}%
+}
+
+% -------------------------------------------------- Resumen y palabras clave
+\newcommand{\imprimirpalabrasclave}{%
+  \ifx\INF@palabrasclave\@empty\else
+    \par\medskip\noindent\textbf{Palabras clave:} \INF@palabrasclave\par
+  \fi}
+
+% ------------------------------------------------ Encabezado y pie ---------
+\RequirePackage{fancyhdr}
+\pagestyle{fancy}
+\fancyhf{}
+\fancyhead[L]{\small\color{black!60}\INF@materia}
+\fancyhead[R]{\small\color{black!60}\INF@tipodocumento}
+\fancyfoot[C]{\thepage}
+\renewcommand{\headrulewidth}{0.4pt}
+\fancypagestyle{plain}{\fancyhf{}\fancyfoot[C]{\thepage}\renewcommand{\headrulewidth}{0pt}}
+
+% -------------------------------------------- Títulos de sección -----------
+\RequirePackage{titlesec}
+\titleformat*{\section}{\Large\bfseries\color{acento}}
+\titleformat*{\subsection}{\large\bfseries\color{acento}}
+\titleformat*{\subsubsection}{\normalsize\bfseries}
+\@ifundefined{chapter}{}{%
+  \titleformat{\chapter}[display]{\huge\bfseries\color{acento}}
+    {\large\chaptertitlename\ \thechapter}{8pt}{\Huge}
+  \titlespacing*{\chapter}{0pt}{0pt}{20pt}}
+
+% ------------------------------------------- Índices en la tabla de contenido
+\RequirePackage[nottoc]{tocbibind}
+
+% --------------------------------------------- Hipervínculos (al final) ----
+\RequirePackage[colorlinks=true, linkcolor=acento, citecolor=acento,
+                urlcolor=acento, bookmarksnumbered=true, pdfusetitle]{hyperref}
+\RequirePackage{bookmark}
+\RequirePackage[spanish, noabbrev, nameinlink]{cleveref}
+\crefname{section}{sección}{secciones}
+\Crefname{section}{Sección}{Secciones}
+\crefname{subsection}{sección}{secciones}
+\Crefname{subsection}{Sección}{Secciones}
+\crefname{appendix}{anexo}{anexos}
+\Crefname{appendix}{Anexo}{Anexos}
+\crefname{table}{tabla}{tablas}
+\Crefname{table}{Tabla}{Tablas}
+\crefname{listing}{código}{códigos}
+\Crefname{listing}{Código}{Códigos}
+\crefname{algocf}{algoritmo}{algoritmos}
+\Crefname{algocf}{Algoritmo}{Algoritmos}
+\crefname{equation}{ecuación}{ecuaciones}
+\Crefname{equation}{Ecuación}{Ecuaciones}
+\creflabelformat{equation}{#2(#1)#3}
+
+% Metadatos del PDF (se aplican al comenzar el documento, cuando datos.tex ya fue leído)
+\AtBeginDocument{%
+  \hypersetup{pdftitle={\INF@titulo}, pdfauthor={\INF@autorespdf},
+              pdfsubject={\INF@materia}, pdfkeywords={\INF@palabrasclave}}}
+
+\endinput

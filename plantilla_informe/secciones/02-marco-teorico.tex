@@ -1,0 +1,34 @@
+\section{Marco teórico}
+\label{sec:marco}
+
+\subsection{Ecuaciones}
+
+Las ecuaciones numeradas se referencian con \verb|\cref|. Por ejemplo, la entropía de un
+conjunto $S$ con $c$ clases (\cref{eq:entropia}) y la ganancia de información de un
+atributo $A$ (\cref{eq:ganancia}):
+\begin{equation}
+  H(S) = -\sum_{i=1}^{c} p_i \log_2 p_i
+  \label{eq:entropia}
+\end{equation}
+\begin{equation}
+  \mathrm{IG}(S, A) = H(S) - \sum_{v \in \mathrm{Valores}(A)} \frac{\abs{S_v}}{\abs{S}}\, H(S_v)
+  \label{eq:ganancia}
+\end{equation}
+
+Los comandos definidos en \texttt{informe.sty} simplifican la notación habitual:
+$\vect{x} \in \R^{d}$, $\mat{X} \in \R^{n \times d}$, $\norm{\vect{x} - \vect{\mu}}_2$,
+$\E[X]$, $\Var(X)$ y
+\begin{equation*}
+  \hat{\vect{\beta}} = \argmin_{\vect{\beta}} \norm{\vect{y} - \mat{X}\vect{\beta}}_2^2 .
+\end{equation*}
+
+\subsection{Recuadros}
+
+\begin{nota}
+  Útil para definiciones, supuestos o aclaraciones que conviene destacar del texto.
+\end{nota}
+
+\begin{importante}[Restricción de integridad]
+  En MySQL 8.4 las restricciones \texttt{CHECK} se validan efectivamente; en versiones
+  anteriores a la 8.0.16 se ignoraban.
+\end{importante}

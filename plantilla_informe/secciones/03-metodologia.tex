@@ -1,0 +1,86 @@
+\section{Metodología}
+\label{sec:metodologia}
+
+\subsection{Diagramas}
+
+Los diagramas exportados desde draw.io conviene guardarlos en PDF (vectorial) dentro de
+\texttt{imagenes/}. También pueden dibujarse directamente con TikZ, como en la
+\cref{fig:proceso}.
+
+\begin{figure}[htbp]
+  \centering
+  \begin{tikzpicture}[node distance=6mm and 8mm,
+      etapa/.style={draw=acento, fill=acento!8, rounded corners, minimum height=9mm,
+                    text width=21mm, align=center, font=\small},
+      flecha/.style={-Stealth, thick, acento}]
+    \node[etapa] (sel) {Selección};
+    \node[etapa, right=of sel] (pre) {Preprocesa\-miento};
+    \node[etapa, right=of pre] (tra) {Transforma\-ción};
+    \node[etapa, right=of tra] (min) {Minería de datos};
+    \node[etapa, right=of min] (eva) {Interpreta\-ción};
+    \foreach \a/\b in {sel/pre, pre/tra, tra/min, min/eva} \draw[flecha] (\a) -- (\b);
+  \end{tikzpicture}
+  \caption{Etapas del proceso \acs{KDD}.}
+  \label{fig:proceso}
+\end{figure}
+
+Para incluir imágenes se usa \verb|\includegraphics| (la ruta \texttt{imagenes/} ya está
+configurada). Con \texttt{subfigure} se agrupan varias en una misma figura
+(\cref{fig:logos}).
+
+\begin{figure}[htbp]
+  \centering
+  \begin{subfigure}[b]{0.3\textwidth}
+    \centering
+    \includegraphics[height=25mm]{utn}
+    \caption{Logo a 25\,mm}
+    \label{fig:logo-a}
+  \end{subfigure}
+  \hfill
+  \begin{subfigure}[b]{0.3\textwidth}
+    \centering
+    \includegraphics[height=18mm]{utn}
+    \caption{Logo a 18\,mm}
+    \label{fig:logo-b}
+  \end{subfigure}
+  \caption{Ejemplo de subfiguras.}
+  \label{fig:logos}
+\end{figure}
+
+\subsection{Código}
+
+El código fuente se incluye desde archivos de la carpeta \texttt{codigo/}, de modo que el
+informe siempre muestre la versión vigente (\cref{lst:sql,lst:python}).
+
+\lstinputlisting[style=sql, caption={Ventas mensuales por categoría con funciones de ventana.},
+                 label=lst:sql]{codigo/consulta.sql}
+
+\lstinputlisting[style=python, caption={Validación cruzada de un árbol de decisión.},
+                 label=lst:python]{codigo/modelo.py}
+
+Fragmentos breves pueden escribirse en línea, como \lstinline[style=sql]|SELECT COUNT(*) FROM venta|,
+o en un bloque:
+
+\begin{lstlisting}[style=consola]
+$ docker compose exec mysql mysql -u emmd_databases -p
+\end{lstlisting}
+
+\subsection{Algoritmos}
+
+\begin{algorithm}[htbp]
+  \caption{$k$-medias}
+  \label{alg:kmedias}
+  \KwIn{Conjunto de datos $\{\vect{x}_1, \dots, \vect{x}_n\}$, número de grupos $k$}
+  \KwOut{Centroides $\vect{\mu}_1, \dots, \vect{\mu}_k$}
+  Elegir $k$ centroides iniciales al azar\;
+  \Repeat{los centroides no cambien}{
+    \For{$i \gets 1$ \KwTo $n$}{
+      $c_i \gets \argmin_{j} \norm{\vect{x}_i - \vect{\mu}_j}^2$\;
+    }
+    \For{$j \gets 1$ \KwTo $k$}{
+      $\vect{\mu}_j \gets$ promedio de los $\vect{x}_i$ con $c_i = j$\;
+    }
+  }
+\end{algorithm}
+
+El \cref{alg:kmedias} se ejecutó para $k = 1, \dots, 8$.

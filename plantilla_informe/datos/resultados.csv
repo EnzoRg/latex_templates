@@ -1,0 +1,5 @@
+Modelo,Exactitud,Precisión,Recall,F1
+Regresión logística,0.842,0.801,0.765,0.783
+Árbol de decisión,0.861,0.832,0.790,0.810
+Random forest,0.893,0.874,0.842,0.858
+k-NN (k=7),0.828,0.790,0.741,0.765

@@ -1,0 +1,70 @@
+\section{Resultados}
+\label{sec:resultados}
+
+\subsection{Tablas}
+
+Las tablas usan \texttt{booktabs} (sin líneas verticales). Las columnas numéricas con tipo
+\texttt{S} de \texttt{siunitx} alinean por la coma decimal (\cref{tab:manual}).
+
+\begin{table}[htbp]
+  \centering
+  \caption{Comparación de modelos (validación cruzada de 10 particiones).}
+  \label{tab:manual}
+  \begin{tabular}{l S[table-format=1.3] S[table-format=1.3] S[table-format=1.3]}
+    \toprule
+    \textbf{Modelo} & {\textbf{Precisión}} & {\textbf{Recall}} & {\textbf{F1}} \\
+    \midrule
+    Regresión logística & 0.801 & 0.765 & 0.783 \\
+    Árbol de decisión   & 0.832 & 0.790 & 0.810 \\
+    Random forest       & \bfseries 0.874 & \bfseries 0.842 & \bfseries 0.858 \\
+    \bottomrule
+  \end{tabular}
+\end{table}
+
+Si los resultados se generan con Python, se pueden exportar a CSV y leerlos directamente con
+\verb|\tablacsv|, sin copiar números a mano (\cref{tab:csv}).
+
+\begin{table}[htbp]
+  \centering
+  \caption{Métricas leídas desde \texttt{datos/resultados.csv}.}
+  \label{tab:csv}
+  \tablacsv{datos/resultados.csv}
+\end{table}
+
+\subsection{Gráficos}
+
+Con \texttt{pgfplots} los gráficos se dibujan desde un CSV y comparten la tipografía del
+documento (\cref{fig:codo}).
+
+\begin{figure}[htbp]
+  \centering
+  \begin{tikzpicture}
+    \begin{axis}[width=0.7\textwidth, height=55mm, xlabel={Número de grupos $k$},
+                 ylabel={Inercia intra-grupo}, grid=major, grid style={black!10},
+                 xtick={1,...,8}, ymin=0]
+      \addplot[acento, thick, mark=*] table[x=k, y=inercia, col sep=comma]{datos/curva_codo.csv};
+      \draw[BrickRed, dashed] (axis cs:4,0) -- (axis cs:4,1600);
+    \end{axis}
+  \end{tikzpicture}
+  \caption{Método del codo para elegir $k$.}
+  \label{fig:codo}
+\end{figure}
+
+\subsection{Matriz de confusión}
+
+\begin{table}[htbp]
+  \centering
+  \caption{Matriz de confusión del modelo seleccionado.}
+  \label{tab:confusion}
+  \begin{tabular}{cc|cc}
+    & & \multicolumn{2}{c}{\textbf{Predicción}} \\
+    & & Positivo & Negativo \\
+    \midrule
+    \multirow{2}{*}{\rotatebox{90}{\textbf{Real}}}
+      & Positivo & \cellcolor{acento!25} 421 & 79 \\
+      & Negativo & 61 & \cellcolor{acento!25} 939 \\
+  \end{tabular}
+\end{table}
+
+Los números con unidades se escriben con \verb|\num| y \verb|\SI|:
+\num{1234567.891}, \SI{3.5}{\giga\byte}, \SI{250}{\milli\second}.

@@ -1,0 +1,9 @@
+# Configuración de latexmk: ejecutar `latexmk` en esta carpeta.
+# `latexmk -pvc` recompila automáticamente al guardar; `latexmk -c` limpia auxiliares.
+$pdf_mode = 1;              # 1 = pdflatex, 4 = lualatex, 5 = xelatex
+$out_dir = 'build';         # archivos auxiliares y PDF quedan en build/
+$bibtex_use = 2;            # ejecuta biber cuando hace falta
+@default_files = ('main.tex');
+$pdflatex = 'pdflatex -interaction=nonstopmode -file-line-error -synctex=1 %O %S';
+$lualatex = 'lualatex -interaction=nonstopmode -file-line-error -synctex=1 %O %S';
+$xelatex  = 'xelatex -interaction=nonstopmode -file-line-error -synctex=1 %O %S';

@@ -1,0 +1,53 @@
+% =============================================================================
+% Plantilla de informe — Especialización y Maestría en Minería de Datos (UTN FRP)
+% Compilar con:  latexmk            (usa la configuración de latexmkrc)
+%
+% Para una tesina/tesis con capítulos, cambiar "article" por "report" y
+% \section por \chapter en los archivos de secciones/.
+% =============================================================================
+\documentclass[11pt, a4paper]{article}
+
+% Opciones: cita=apa|numerico, borrador, sinsangria, interlineado=<factor>
+\usepackage[cita=apa]{informe}
+
+\input{datos}
+\addbibresource{bibliografia.bib}
+
+\begin{document}
+
+\portada
+
+% ------------------------------------------------------------------ Resumen ---
+\begin{abstract}
+  \noindent Resumen de 150 a 250 palabras: problema, datos utilizados, método,
+  principales resultados y conclusión.
+  \imprimirpalabrasclave
+\end{abstract}
+\clearpage
+
+% ------------------------------------------------------------------ Índices ---
+\tableofcontents
+\listoffigures
+\listoftables
+\lstlistoflistings
+% \listofalgorithms
+\clearpage
+
+% ------------------------------------------------------------------ Cuerpo ----
+\input{secciones/01-introduccion}
+\input{secciones/02-marco-teorico}
+\input{secciones/03-metodologia}
+\input{secciones/04-resultados}
+\input{secciones/05-conclusiones}
+
+% ---------------------------------------------------- Referencias y anexos ---
+\printbibliography[heading=bibintoc, title={Referencias}]
+
+\section*{Acrónimos}
+\addcontentsline{toc}{section}{Acrónimos}
+\input{acronimos}
+
+\appendix
+\input{secciones/A-anexo}
+
+\end{document}
