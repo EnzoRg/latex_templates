@@ -1,0 +1,15 @@
+build/
+*.aux
+*.log
+*.nav
+*.out
+*.snm
+*.toc
+*.vrb
+*.bbl
+*.bcf
+*.blg
+*.run.xml
+*.fdb_latexmk
+*.fls
+*.synctex.gz

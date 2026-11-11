@@ -1,0 +1,233 @@
+% =============================================================================
+% beamerthemeutnfrc.sty — Tema Beamer con la identidad visual de la UTN FRC
+% Colores, logos y tipografías según el Manual de Identidad Visual UTN FRC
+% (versión reducida, mayo 2026) — https://identidad.frc.utn.edu.ar/
+%
+% Uso:   \usetheme{utnfrc}                (compilar con pdfLaTeX)
+% Datos: \materia{...} \curso{...} \docentes{...} además de \title, \author...
+% =============================================================================
+\NeedsTeXFormat{LaTeX2e}
+\ProvidesPackage{beamerthemeutnfrc}[2026/11/10 Tema UTN FRC]
+
+% Carpeta de los logos (relativa al main.tex); se puede cambiar con \renewcommand
+\newcommand{\utnlogos}{imagenes/logos/}
+
+% ------------------------------------------------------------- Paquetes base ---
+% es-noshorthands: evita conflictos de babel con TikZ ("<", ">", "~").
+% es-nodecimaldot: no altera el punto en modo matemático.
+% Nota: babel en español escribe \sin como «sen» y \lim como «lím».
+\RequirePackage[spanish, es-tabla, es-noshorthands, es-nodecimaldot]{babel}
+\RequirePackage{tikz}
+\usetikzlibrary{calc}
+
+% Tipografía: Noto Sans (oficial UTN FRC) + matemática Noto Sans (notomath)
+% + Noto Sans Mono. Barlow no tiene versión matemática ni soporte en pdfLaTeX.
+\usefonttheme{professionalfonts}   % que Beamer no reemplace la fuente matemática
+\RequirePackage[sfdefault, mono]{notomath}
+
+% ------------------------------------------------------------------- Colores ---
+% Primarios
+\definecolor{azulutn}{HTML}{1538B8}
+\definecolor{azuloscuro}{HTML}{0B2986}
+\definecolor{azulclaro}{HTML}{D9E5F4}
+% Secundarios
+\definecolor{celeste}{HTML}{40C5F2}
+\definecolor{celesteoscuro}{HTML}{0A3F60}
+\definecolor{celesteclaro}{HTML}{E2F6F9}
+% Neutros
+\definecolor{gris}{HTML}{E5E5E5}
+\definecolor{negro}{HTML}{191919}
+\definecolor{grisclaro}{HTML}{FAFAFA}
+% Complementarios
+\definecolor{vital}{HTML}{6FA958}
+\definecolor{vision}{HTML}{D830A0}
+\definecolor{energia}{HTML}{FF8E2C}
+% Derivados para texto sobre blanco (mejor contraste que los originales)
+\colorlet{vitaloscuro}{vital!70!black}
+\colorlet{grismedio}{negro!55}
+
+\setbeamercolor{normal text}{fg=negro, bg=white}
+\setbeamercolor{structure}{fg=azulutn}
+\setbeamercolor{alerted text}{fg=vision}
+\setbeamercolor{example text}{fg=vitaloscuro}
+\setbeamercolor{frametitle}{fg=azulutn}
+\setbeamercolor{framesubtitle}{fg=grismedio}
+\setbeamercolor{footline}{fg=grismedio}
+\setbeamercolor{itemize item}{fg=azulutn}
+\setbeamercolor{itemize subitem}{fg=celeste}
+\setbeamercolor{enumerate item}{fg=azulutn}
+\setbeamercolor{block title}{fg=white, bg=azulutn}
+\setbeamercolor{block body}{fg=negro, bg=azulclaro}
+\setbeamercolor{bibliography entry author}{fg=negro}
+\setbeamercolor{bibliography entry title}{fg=negro}
+\setbeamercolor{bibliography entry location}{fg=grismedio}
+\setbeamercolor{bibliography entry note}{fg=grismedio}
+
+% ------------------------------------------------------------------- Fuentes ---
+\setbeamerfont{title}{size=\LARGE, series=\bfseries}
+\setbeamerfont{subtitle}{size=\large}
+\setbeamerfont{frametitle}{size=\large, series=\bfseries}
+\setbeamerfont{framesubtitle}{size=\small}
+\setbeamerfont{footline}{size=\tiny}
+\setbeamerfont{block title}{size=\normalsize, series=\bfseries}
+\setbeamerfont{section title}{size=\huge, series=\bfseries}
+
+% ------------------------------------------------------- Geometría y adornos ---
+\setbeamersize{text margin left=0.9cm, text margin right=0.9cm}
+\AtBeginDocument{\frenchspacing}   % sin espacio extra tras punto (tipografía en español)
+\setbeamertemplate{navigation symbols}{}
+\setbeamertemplate{itemize items}[circle]
+\setbeamertemplate{enumerate items}[default]
+\setbeamertemplate{blocks}[rounded][shadow=false]
+\setbeamertemplate{bibliography item}{\insertbiblabel}
+\setbeamertemplate{caption}[numbered]
+
+% Gradiente oficial: Celeste Asento -> Azul UTN FRC
+\newcommand{\utn@franjagradiente}[1]{% #1 = alto; franja inferior de ancho completo
+  \shade[left color=celeste, right color=azulutn] (0,0) rectangle (\paperwidth,#1);}
+
+% Semicírculos decorativos (inspirados en el análisis morfológico del símbolo)
+\newcommand{\utn@arcos}[1]{% #1 = opacidad base
+  \begin{scope}
+    \clip (0,0) rectangle (\paperwidth,\paperheight);
+    \foreach \r/\o in {3.0/1, 4.3/0.6, 5.6/0.35}
+      \draw[celeste, line width=9pt, opacity=#1*\o] (\paperwidth,0) circle[radius=\r cm];
+  \end{scope}}
+
+% Fondo de las diapositivas normales: blanco, logo reducido arriba a la derecha
+\setbeamertemplate{background}{%
+  \begin{tikzpicture}
+    \useasboundingbox (0,0) rectangle (\paperwidth,\paperheight);
+    \node[anchor=north east, inner sep=0pt] at (\paperwidth-0.45cm,\paperheight-0.35cm)
+      {\includegraphics[height=0.62cm]{\utnlogos frc-reducido-azul}};
+    \utn@franjagradiente{2pt}
+  \end{tikzpicture}}
+
+% Título de diapositiva con línea de gradiente debajo
+\setbeamertemplate{frametitle}{%
+  \vskip0.45cm
+  \begin{beamercolorbox}[wd=\paperwidth, leftskip=0.9cm, rightskip=1.9cm]{frametitle}
+    \usebeamerfont{frametitle}\strut\insertframetitle\strut
+    \ifx\insertframesubtitle\@empty\else
+      \par{\usebeamerfont{framesubtitle}\usebeamercolor[fg]{framesubtitle}\insertframesubtitle\strut}
+    \fi
+  \end{beamercolorbox}
+  \vskip2pt
+  \hbox to \paperwidth{\tikz\shade[left color=celeste, right color=azulutn]
+    (0,0) rectangle (\paperwidth-1.8cm,1.2pt);\hss}
+  \vskip0.15cm}
+% Sin «I, II, ...» en los títulos de diapositivas con allowframebreaks
+\setbeamertemplate{frametitle continuation}{}
+
+% Pie: materia (izq.) · autor (centro) · número de diapositiva (der.)
+\setbeamertemplate{footline}{%
+  \usebeamerfont{footline}\usebeamercolor[fg]{footline}%
+  \hbox to \paperwidth{%
+    \hspace*{0.9cm}\rlap{\utn@materia}\hfill
+    \insertshortauthor\hfill
+    \llap{\insertframenumber\,/\,\inserttotalframenumber}\hspace*{0.9cm}}%
+  \vskip0.3cm}
+
+% ------------------------------------------------------- Datos de la portada ---
+\def\utn@materia{}\def\utn@curso{}\def\utn@docentes{}
+\newcommand{\materia}[1]{\def\utn@materia{#1}}
+\newcommand{\curso}[1]{\def\utn@curso{#1}}
+\newcommand{\docentes}[1]{\def\utn@docentes{#1}}
+
+% --------------------------------------------------------------------- Portada ---
+\newcommand{\utn@fondoportada}{%
+  \begin{tikzpicture}
+    \useasboundingbox (0,0) rectangle (\paperwidth,\paperheight);
+    \fill[azuloscuro] (0,0) rectangle (\paperwidth,\paperheight);
+    \utn@arcos{0.22}
+    \utn@franjagradiente{0.22cm}
+    \node[anchor=north west, inner sep=0pt] at (0.9cm,\paperheight-0.7cm)
+      {\includegraphics[height=1.05cm]{\utnlogos frc-extendido-blanco}};
+    \node[anchor=west, inner sep=0pt, text width=0.75\paperwidth, align=left, text=white]
+      at (0.9cm,0.56\paperheight) {%
+        \hyphenpenalty=10000\exhyphenpenalty=10000
+        {\usebeamerfont{title}\inserttitle\par}
+        \ifx\insertsubtitle\@empty\else
+          \vspace{0.35em}{\usebeamerfont{subtitle}\color{celeste}\insertsubtitle\par}
+        \fi};
+    \node[anchor=south west, inner sep=0pt, text width=0.7\paperwidth, align=left,
+          text=white, font=\footnotesize] at (0.9cm,0.75cm) {%
+        \ifx\utn@materia\@empty\else
+          {\bfseries\utn@materia}\ifx\utn@curso\@empty\else\ \textperiodcentered\ \utn@curso\fi\par
+        \fi
+        \vspace{0.25em}\insertauthor\par
+        \ifx\utn@docentes\@empty\else
+          {\color{azulclaro}Docentes: \utn@docentes}\par
+        \fi
+        {\color{azulclaro}\insertdate}};
+  \end{tikzpicture}}
+
+\newcommand{\portada}{%
+  {\setbeamertemplate{background}{\utn@fondoportada}%
+   \begin{frame}[plain, noframenumbering]\end{frame}}}
+
+% -------------------------------------------------- Separador de sección ---
+\newcommand{\utn@fondoseccion}{%
+  \begin{tikzpicture}
+    \useasboundingbox (0,0) rectangle (\paperwidth,\paperheight);
+    \fill[azulutn] (0,0) rectangle (\paperwidth,\paperheight);
+    \utn@arcos{0.25}
+    \utn@franjagradiente{0.22cm}
+    \node[anchor=north east, inner sep=0pt] at (\paperwidth-0.6cm,\paperheight-0.5cm)
+      {\includegraphics[height=0.8cm]{\utnlogos frc-reducido-blanco}};
+    \node[anchor=south west, inner sep=0pt, text=celeste, font=\fontsize{54}{54}\selectfont\bfseries]
+      at (0.9cm,0.5\paperheight) {\two@digits{\insertsectionnumber}};
+    \node[anchor=north west, inner sep=0pt, text=white, text width=0.75\paperwidth, align=left]
+      at (0.9cm,0.5\paperheight-0.25cm) {\usebeamerfont{section title}\hyphenpenalty=10000 \insertsectionhead\par};
+  \end{tikzpicture}}
+
+\AtBeginSection{%
+  {\setbeamertemplate{background}{\utn@fondoseccion}%
+   \begin{frame}[plain, noframenumbering]\end{frame}}}
+
+% ------------------------------------------------------ Diapositiva de cierre ---
+% \diapositivacierre{¿Preguntas?}  o  \diapositivacierre[correo@frc.utn.edu.ar]{¡Gracias!}
+\newcommand{\diapositivacierre}[2][]{%
+  {\setbeamertemplate{background}{%
+    \begin{tikzpicture}
+      \useasboundingbox (0,0) rectangle (\paperwidth,\paperheight);
+      \fill[azuloscuro] (0,0) rectangle (\paperwidth,\paperheight);
+      \utn@arcos{0.22}
+      \utn@franjagradiente{0.22cm}
+      \node[anchor=south, inner sep=0pt] at (0.5\paperwidth,0.47\paperheight)
+        {\includegraphics[height=2.6cm]{\utnlogos frc-vertical-blanco}};
+      \node[anchor=north, text=white, font=\huge\bfseries] at (0.5\paperwidth,0.4\paperheight) {#2};
+      \node[anchor=north, text=celeste, font=\small] at (0.5\paperwidth,0.26\paperheight) {#1};
+    \end{tikzpicture}}%
+   \begin{frame}[plain, noframenumbering]\end{frame}}}
+
+% ---------------------------------------------------------- Bloques temáticos ---
+% Uso: \begin{definicion}[Nombre opcional] ... \end{definicion}
+% Admiten especificación de capas: \begin{teorema}<2->[Convolución] ... \end{teorema}
+% #1 entorno, #2 rótulo, #3 color del título, #4 color del cuerpo
+\newcommand{\utn@nuevobloque}[4]{%
+  \newenvironment<>{#1}[1][]{%
+    \setbeamercolor{block title}{fg=white, bg=#3}%
+    \setbeamercolor{block body}{fg=negro, bg=#4}%
+    \def\utn@tmp{##1}%
+    \begin{block}##2{#2\ifx\utn@tmp\@empty\else\ \mdseries(##1)\fi}}
+    {\end{block}}}
+\utn@nuevobloque{definicion}{Definición}{azulutn}{azulclaro}
+\utn@nuevobloque{teorema}{Teorema}{celesteoscuro}{celesteclaro}
+\utn@nuevobloque{propiedad}{Propiedad}{celesteoscuro}{celesteclaro}
+\utn@nuevobloque{ejemplo}{Ejemplo}{vitaloscuro}{vital!12}
+\utn@nuevobloque{importante}{Importante}{energia!85!black}{energia!12}
+\utn@nuevobloque{observacion}{Observación}{grismedio}{grisclaro}
+
+% Demostración: entorno proof de Beamer (babel lo rotula «Demostración»)
+\newenvironment{demostracion}{\begin{proof}}{\end{proof}}
+
+% Resaltar una expresión matemática, opcionalmente en una capa:
+%   \resaltar{x(t) \conv h(t)}     \resaltar<3->{...}
+% Fuera de la capa ocupa el mismo lugar sin fondo (no mueve la ecuación).
+\newcommand<>{\resaltar}[1]{%
+  {\setlength{\fboxsep}{3pt}%
+   \alt#2{\colorbox{azulclaro}{$\displaystyle #1$}}%
+         {{\setlength{\fboxrule}{0pt}\fbox{$\displaystyle #1$}}}}}
+
+\endinput

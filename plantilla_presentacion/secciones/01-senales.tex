@@ -1,0 +1,96 @@
+% =============================================================================
+\section{Señales}
+% =============================================================================
+
+\begin{frame}{Señales: definición y clasificación}
+  \begin{definicion}
+    Una \alert{señal} es una función que transporta información sobre el
+    comportamiento de un fenómeno físico: $x\colon \R \to \C$ (tiempo continuo)
+    o $x\colon \Zent \to \C$ (tiempo discreto).
+  \end{definicion}
+
+  \begin{columns}[T]
+    \begin{column}{0.48\textwidth}
+      \begin{itemize}
+        \item Continua $x(t)$ o discreta $x[n]$
+        \item Periódica: $x(t) = x(t + T_0)\ \forall t$
+        \item Par / impar: $x(-t) = \pm x(t)$
+      \end{itemize}
+    \end{column}
+    \begin{column}{0.48\textwidth}
+      \begin{itemize}
+        \item Determinística o aleatoria
+        \item Causal: $x(t) = 0$ para $t < 0$
+        \item De energía o de potencia
+      \end{itemize}
+    \end{column}
+  \end{columns}
+\end{frame}
+
+\begin{frame}{Señales elementales}
+  \begin{columns}[c]
+    \begin{column}{0.42\textwidth}
+      Escalón unitario
+      \[
+        \escalon{t} =
+        \begin{cases}
+          1, & t \geq 0\\
+          0, & t < 0
+        \end{cases}
+      \]
+      Impulso unitario
+      \[
+        \impulso{t} = \frac{\dd \escalon{t}}{\dd t},
+        \qquad \int_{-\infty}^{\infty} \impulso{t} \dd t = 1
+      \]
+      \pause
+      Exponencial discreta causal
+      \[
+        x[n] = a^{n}\,\escalon{n}, \quad \abs{a} < 1
+      \]
+    \end{column}
+    \begin{column}{0.54\textwidth}
+      \centering
+      \begin{tikzpicture}
+        \begin{axis}[ejes senal, width=\linewidth, height=3.4cm,
+            xlabel={$t$}, ylabel={$\escalon{t}$}, xmin=-2, xmax=3, ymin=0, ymax=1.2,
+            xtick={-2,...,3}, ytick={1}]
+          \addplot[senal continua, domain=-2:0] {0};
+          \addplot[senal continua, domain=0:3] {1};
+          \draw[azulutn, very thick, densely dotted] (axis cs:0,0) -- (axis cs:0,1);
+        \end{axis}
+      \end{tikzpicture}
+
+      \onslide<2->{%
+      \begin{tikzpicture}
+        \begin{axis}[ejes senal, width=\linewidth, height=3.4cm,
+            xlabel={$n$}, ylabel={$x[n]$}, xmin=-3, xmax=10, ymin=0, ymax=1.2,
+            xtick={-2,0,...,10}, ytick={1}]
+          \addplot[senal discreta, domain=-3:-1, samples=3] {0};
+          \addplot[senal discreta, domain=0:10, samples=11] {0.75^x};
+        \end{axis}
+      \end{tikzpicture}}
+    \end{column}
+  \end{columns}
+\end{frame}
+
+\begin{frame}{Energía y potencia}
+  \begin{definicion}[energía y potencia media]
+    \vspace{-0.5\baselineskip}
+    \begin{align*}
+      E_x &= \int_{-\infty}^{\infty} \abs{x(t)}^2 \dd t, &
+      P_x &= \lim_{T \to \infty} \frac{1}{2T} \int_{-T}^{T} \abs{x(t)}^2 \dd t
+    \end{align*}
+  \end{definicion}
+
+  \pause
+  \begin{ejemplo}
+    Para $x(t) = A\,\e^{-at}\escalon{t}$, con $a > 0$:
+    \[
+      E_x = \int_{0}^{\infty} A^2 \e^{-2at} \dd t
+          = \resaltar<3->{\frac{A^2}{2a}} < \infty
+      \quad\Longrightarrow\quad P_x = 0
+    \]
+    \onslide<3->{Es una \alert{señal de energía}.}
+  \end{ejemplo}
+\end{frame}

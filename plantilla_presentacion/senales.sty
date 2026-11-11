@@ -1,0 +1,155 @@
+% =============================================================================
+% senales.sty — Notación y gráficos para Análisis de Señales y Sistemas
+% Uso:   \usepackage{senales}   (después de \usetheme{utnfrc})
+% =============================================================================
+\NeedsTeXFormat{LaTeX2e}
+\ProvidesPackage{senales}[2026/11/10 Notacion de senales y sistemas]
+
+% amssymb no se carga: notomath ya provee \mathbb y los símbolos AMS.
+\RequirePackage{mathtools}
+\RequirePackage{bm}
+\RequirePackage{booktabs}
+\RequirePackage{siunitx}
+\RequirePackage{tikz}
+\RequirePackage{pgfplots}
+\usetikzlibrary{arrows.meta, positioning, calc, shapes.geometric}
+\usepgfplotslibrary{fillbetween}
+
+\sisetup{output-decimal-marker={,}, group-separator={\,}, group-minimum-digits=4}
+
+% Colores de respaldo si no se usa el tema utnfrc
+\providecolor{azulutn}{HTML}{1538B8}
+\providecolor{azulclaro}{HTML}{D9E5F4}
+\providecolor{celeste}{HTML}{40C5F2}
+\providecolor{celesteclaro}{HTML}{E2F6F9}
+\providecolor{negro}{HTML}{191919}
+\providecolor{gris}{HTML}{E5E5E5}
+\providecolor{vital}{HTML}{6FA958}
+\providecolor{vision}{HTML}{D830A0}
+\providecolor{energia}{HTML}{FF8E2C}
+
+% ---------------------------------------------------- Conjuntos y constantes ---
+\newcommand{\R}{\mathbb{R}}
+\newcommand{\C}{\mathbb{C}}
+\newcommand{\N}{\mathbb{N}}
+\newcommand{\Zent}{\mathbb{Z}}                       % enteros (\Z queda libre)
+\renewcommand{\j}{\ensuremath{\mathrm{j}}}           % unidad imaginaria
+\providecommand{\e}{}\renewcommand{\e}{\ensuremath{\mathrm{e}}}  % número de Euler
+\newcommand{\dd}{\mathop{}\!\mathrm{d}}              % diferencial: \int x(t) \dd t
+\renewcommand{\Re}{\operatorname{Re}}
+\renewcommand{\Im}{\operatorname{Im}}
+\DeclarePairedDelimiter{\abs}{\lvert}{\rvert}        % \abs{x}, \abs*{\frac{a}{b}} ajusta tamaño
+\DeclarePairedDelimiter{\norm}{\lVert}{\rVert}
+\newcommand{\conj}[1]{{#1}^{*}}
+\newcommand{\vect}[1]{\bm{#1}}
+
+% ----------------------------------------------------------------- Señales ---
+\newcommand{\escalon}[1]{u(#1)}                      % escalón unitario
+\newcommand{\impulso}[1]{\delta(#1)}                 % impulso (delta de Dirac / Kronecker)
+\DeclareMathOperator{\rect}{rect}
+\DeclareMathOperator{\sinc}{sinc}                    % sinc(x) = sen(πx)/(πx)
+\DeclareMathOperator{\sgn}{sgn}
+\newcommand{\conv}{\ast}                             % convolución
+\newcommand{\convcirc}{\circledast}                  % convolución circular
+
+% -------------------------------------------------------------- Transformadas ---
+% Operadores:  \TF{x(t)} → ℱ{x(t)}   \iTF{X(\j\omega)} → ℱ⁻¹{…}
+% Pares:       x(t) \fourier X(\j\omega)   x(t) \laplace X(s)   x[n] \ztransf X(z)
+\newcommand{\TF}[1]{\mathcal{F}\left\{#1\right\}}
+\newcommand{\iTF}[1]{\mathcal{F}^{-1}\left\{#1\right\}}
+\newcommand{\TL}[1]{\mathcal{L}\left\{#1\right\}}
+\newcommand{\iTL}[1]{\mathcal{L}^{-1}\left\{#1\right\}}
+\newcommand{\TZ}[1]{\mathcal{Z}\left\{#1\right\}}
+\newcommand{\iTZ}[1]{\mathcal{Z}^{-1}\left\{#1\right\}}
+\newcommand{\ROC}{\mathrm{ROC}}
+
+% Símbolos de par transformado ○—● (estilo DIN 5487) con la letra de la transformada
+% encima. El círculo vacío va del lado del tiempo; las versiones en mayúscula
+% invierten el sentido:  X(\j\omega) \Fourier x(t).
+% notomath ya define \laplace (laplaciano ∆): se conserva como \laplaciano.
+\ifdefined\laplace\let\laplaciano\laplace\let\laplace\relax\fi
+\newdimen\sen@eje   % altura del eje matemático (donde va la raya de fracción)
+\newcommand{\sen@par}[3]{% #1 letra, #2 relleno izquierdo, #3 relleno derecho
+  \mathrel{\sen@eje=\fontdimen22\textfont2
+    \tikz[baseline={(0pt,-\sen@eje)}, line width=0.45pt, inner sep=0pt]{%
+    \draw[fill=#2] (0.2em,0) circle[radius=0.2em];
+    \draw (0.4em,0) -- (1.6em,0);
+    \draw[fill=#3] (1.8em,0) circle[radius=0.2em];
+    \node[anchor=south, font=\fontsize{6}{6}\selectfont] at (1em,0.2em) {$#1$};}}}
+\newcommand{\fourier}{\sen@par{\mathcal{F}}{none}{.}}
+\newcommand{\Fourier}{\sen@par{\mathcal{F}}{.}{none}}
+\newcommand{\laplace}{\sen@par{\mathcal{L}}{none}{.}}
+\newcommand{\Laplace}{\sen@par{\mathcal{L}}{.}{none}}
+\newcommand{\ztransf}{\sen@par{\mathcal{Z}}{none}{.}}
+\newcommand{\Ztransf}{\sen@par{\mathcal{Z}}{.}{none}}
+
+% ------------------------------------------------------------------ pgfplots ---
+\pgfplotsset{
+  compat=1.18,
+  /pgf/number format/use comma,
+  /pgf/number format/1000 sep={\,},
+  % Ejes cartesianos centrados con flechas, para señales en el tiempo
+  ejes senal/.style={
+    axis lines=middle,
+    axis line style={-{Stealth[length=5pt]}, negro!70},
+    xlabel style={anchor=west, font=\small},
+    ylabel style={anchor=south, font=\small},
+    ticklabel style={font=\scriptsize},
+    tick style={negro!70},
+    enlarge x limits={abs=0.3},
+    enlarge y limits={upper, abs=0.25},
+    clip=false,
+  },
+  % Señal de tiempo continuo
+  senal continua/.style={azulutn, very thick, no marks, samples=200},
+  % Señal de tiempo discreto (secuencia): tallos con marca circular
+  senal discreta/.style={azulutn, thick, ycomb,
+    mark=*, mark size=2pt, mark options={fill=white, thick}},
+  % Espectros: como ejes senal pero con etiqueta en ω
+  espectro/.style={ejes senal, xlabel={$\omega$}},
+  % Diagrama de Bode: usar con \begin{semilogxaxis}[bode] (xmode no se puede fijar en un estilo)
+  bode/.style={
+    axis lines=left, grid=both,
+    major grid style={negro!20}, minor grid style={negro!8},
+    ticklabel style={font=\scriptsize}, label style={font=\small},
+    xlabel={$\omega$ [\si{rad/s}]},
+    every axis plot/.append style={very thick, no marks, samples=150},
+    legend style={font=\scriptsize, draw=none, fill=white, fill opacity=0.85, text opacity=1},
+    legend cell align=left,
+  },
+  % Plano complejo s y plano z (el plano z dibuja el círculo unitario)
+  plano s/.style={
+    axis lines=middle, axis equal image,
+    axis line style={-{Stealth[length=5pt]}, negro!70},
+    xlabel={$\sigma$}, ylabel={$\j\omega$},
+    xlabel style={anchor=west, font=\small}, ylabel style={anchor=south, font=\small},
+    ticklabel style={font=\scriptsize}, clip=false,
+  },
+  plano z/.style={
+    plano s, xlabel={$\Re\{z\}$}, ylabel={$\Im\{z\}$},
+    execute at begin axis={\draw[negro!50, dashed] (axis cs:0,0) circle[radius=1];},
+  },
+  % Marcas de polos (×) y ceros (○)
+  polo/.style={only marks, mark=x, mark size=4pt, line width=1.5pt, vision},
+  cero/.style={only marks, mark=o, mark size=3.5pt, line width=1.2pt, azulutn},
+  % Ciclo de colores de las curvas con la paleta institucional
+  cycle list={
+    {azulutn, very thick},
+    {energia, very thick},
+    {vision, very thick},
+    {vital, very thick},
+    {celeste, very thick}},
+}
+
+% ------------------------------------------------------- Diagramas de bloques ---
+%  \node[bloque] (h) {$H(s)$};  \node[sumador] (s) {};  \draw[flecha] (a) -- (b);
+\tikzset{
+  bloque/.style={draw=azulutn, fill=azulclaro, thick, rounded corners=2pt,
+    minimum height=2.4em, minimum width=3.6em, align=center, inner sep=4pt},
+  sumador/.style={draw=azulutn, fill=white, thick, circle, minimum size=1.3em, inner sep=0pt},
+  rama/.style={circle, fill=negro, inner sep=0pt, minimum size=3.5pt},
+  flecha/.style={-{Stealth[length=6pt]}, thick, negro},
+  senial/.style={font=\small},                       % rótulos sobre las flechas
+}
+
+\endinput

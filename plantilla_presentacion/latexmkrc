@@ -1,0 +1,7 @@
+# Configuración de latexmk: ejecutar `latexmk` en esta carpeta.
+# `latexmk -pvc` recompila automáticamente al guardar; `latexmk -c` limpia auxiliares.
+$pdf_mode = 1;              # 1 = pdflatex (requerido por notomath)
+$out_dir = 'build';         # archivos generados en build/ (fuera del control de versiones)
+$bibtex_use = 2;            # ejecutar biber cuando haga falta
+@default_files = ('main.tex');
+$pdflatex = 'pdflatex -interaction=nonstopmode -file-line-error -synctex=1 %O %S';

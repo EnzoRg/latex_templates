@@ -1,0 +1,112 @@
+% =============================================================================
+\section{Análisis de Fourier}
+% =============================================================================
+
+\begin{frame}{Serie de Fourier}
+  Toda señal periódica $x(t)$ de período $T_0$ que cumple las condiciones de Dirichlet
+  admite el desarrollo
+  \begin{align*}
+    x(t) &= \sum_{k=-\infty}^{\infty} c_k\, \e^{\j k \omega_0 t},
+    & \omega_0 &= \frac{2\pi}{T_0} \\
+    % En align* usar \onslide por celda (\pause no funciona bien: amsmath mide dos veces)
+    \onslide<2->{c_k} &\onslide<2->{= \frac{1}{T_0} \int_{\langle T_0 \rangle} x(t)\, \e^{-\j k \omega_0 t} \dd t}
+  \end{align*}
+  \begin{teorema}<3->[Parseval para señales periódicas]
+    \[
+      P_x = \frac{1}{T_0} \int_{\langle T_0 \rangle} \abs{x(t)}^2 \dd t
+          = \sum_{k=-\infty}^{\infty} \abs{c_k}^2
+    \]
+  \end{teorema}
+\end{frame}
+
+\begin{frame}{Transformada de Fourier}
+  \begin{definicion}
+    \vspace{-0.5\baselineskip}
+    \begin{align*}
+      X(\j\omega) = \TF{x(t)} &= \int_{-\infty}^{\infty} x(t)\, \e^{-\j\omega t} \dd t \\
+      x(t) = \iTF{X(\j\omega)} &= \frac{1}{2\pi} \int_{-\infty}^{\infty} X(\j\omega)\, \e^{\j\omega t} \dd \omega
+    \end{align*}
+  \end{definicion}
+  Se escribe $x(t) \fourier X(\j\omega)$.
+  \begin{columns}[T]
+    \begin{column}{0.48\textwidth}
+      \begin{itemize}
+        \item $X(\j\omega) = \abs{X(\j\omega)}\, \e^{\j\angle X(\j\omega)}$
+        \item Espectro de magnitud y de fase
+      \end{itemize}
+    \end{column}
+    \begin{column}{0.48\textwidth}
+      \begin{itemize}
+        \item $x(t)$ real $\Rightarrow X(-\j\omega) = \conj{X}(\j\omega)$
+        \item Simetría hermítica
+      \end{itemize}
+    \end{column}
+  \end{columns}
+\end{frame}
+
+\begin{frame}{Pares y propiedades}
+  \begin{columns}[T]
+    \begin{column}{0.47\textwidth}
+      \centering
+      \renewcommand{\arraystretch}{1.25}
+      \begin{tabular}{@{}cc@{}}
+        \toprule
+        $x(t)$ & $X(\j\omega)$ \\
+        \midrule
+        $\impulso{t}$ & $1$ \\
+        $\e^{-at}\escalon{t}$ & $\dfrac{1}{a + \j\omega}$ \\
+        $\rect\!\left(\dfrac{t}{\tau}\right)$ & $\tau \sinc\!\left(\dfrac{\omega\tau}{2\pi}\right)$ \\
+        $\e^{\j\omega_0 t}$ & $2\pi\, \impulso{\omega - \omega_0}$ \\
+        $\cos(\omega_0 t)$ & $\pi\left[\impulso{\omega - \omega_0} + \impulso{\omega + \omega_0}\right]$ \\
+        \bottomrule
+      \end{tabular}
+    \end{column}
+    \begin{column}{0.5\textwidth}
+      \centering\small
+      \renewcommand{\arraystretch}{1.25}
+      \begin{tabular}{@{}lc@{}}
+        \toprule
+        Propiedad & Resultado \\
+        \midrule
+        Desplazamiento & $x(t - t_0) \fourier \e^{-\j\omega t_0} X(\j\omega)$ \\
+        Modulación & $\e^{\j\omega_0 t} x(t) \fourier X(\j(\omega - \omega_0))$ \\
+        Derivación & $\dfrac{\dd x}{\dd t} \fourier \j\omega\, X(\j\omega)$ \\
+        Convolución & $x \conv h \fourier X(\j\omega)\, H(\j\omega)$ \\
+        Producto & $x\,y \fourier \dfrac{1}{2\pi}\, X \conv Y$ \\
+        \bottomrule
+      \end{tabular}
+    \end{column}
+  \end{columns}
+  \vfill
+  {\footnotesize Con $\sinc(x) = \dfrac{\sin(\pi x)}{\pi x}$. Tablas completas en \cite{oppenheim1997}.}
+\end{frame}
+
+\begin{frame}{Espectro de un pulso rectangular}
+  \begin{columns}[c]
+    \begin{column}{0.36\textwidth}
+      \[
+        \rect\!\left(\frac{t}{\tau}\right) \fourier \frac{2 \sin(\omega\tau/2)}{\omega}
+      \]
+      \begin{itemize}
+        \item Ceros en $\omega = \dfrac{2\pi k}{\tau}$, $k \neq 0$
+        \item<2-> Pulso más angosto $\Rightarrow$ \alert{espectro más ancho}
+      \end{itemize}
+    \end{column}
+    \begin{column}{0.6\textwidth}
+      \centering
+      \begin{tikzpicture}
+        \begin{axis}[espectro, width=\linewidth, height=5.2cm,
+            ylabel={$X(\j\omega)$}, xmin=-20, xmax=20, ymin=-0.35, ymax=1.1,
+            xtick={-12.566,-6.283,6.283,12.566},
+            xticklabels={$-\frac{4\pi}{\tau}$,$-\frac{2\pi}{\tau}$,$\frac{2\pi}{\tau}$,$\frac{4\pi}{\tau}$},
+            ytick={1}, yticklabels={$\tau$},
+            legend style={font=\scriptsize, draw=none, at={(1,1)}, anchor=north east}]
+          \addplot[senal continua, samples=400, domain=-20:20] {2*sin(deg(x/2))/x};
+          \addlegendentry{$\tau = 1$}
+          \only<2->{\addplot[energia, very thick, samples=400, domain=-20:20] {2*sin(deg(x*0.25))/x};
+                    \addlegendentry{$\tau = 0{,}5$}}
+        \end{axis}
+      \end{tikzpicture}
+    \end{column}
+  \end{columns}
+\end{frame}

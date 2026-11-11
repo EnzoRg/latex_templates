@@ -1,0 +1,22 @@
+% =============================================================================
+% Diapositivas de respaldo (después de \appendix): no se numeran en el total
+% =============================================================================
+
+\begin{frame}{Respaldo: propiedad de convolución}
+  \begin{teorema}
+    Si $x(t) \fourier X(\j\omega)$ y $h(t) \fourier H(\j\omega)$, entonces
+    $x(t) \conv h(t) \fourier X(\j\omega)\, H(\j\omega)$.
+  \end{teorema}
+  \begin{demostracion}
+    \vspace{-\baselineskip}
+    \begin{align*}
+      \TF{x \conv h}
+        &= \int_{-\infty}^{\infty} \left[ \int_{-\infty}^{\infty} x(\tau)\, h(t - \tau) \dd\tau \right]
+           \e^{-\j\omega t} \dd t \\
+        &= \int_{-\infty}^{\infty} x(\tau) \left[ \int_{-\infty}^{\infty} h(t - \tau)\,
+           \e^{-\j\omega t} \dd t \right] \dd\tau
+         = \int_{-\infty}^{\infty} x(\tau)\, \e^{-\j\omega\tau} H(\j\omega) \dd\tau \\
+        &= X(\j\omega)\, H(\j\omega) \qedhere
+    \end{align*}
+  \end{demostracion}
+\end{frame}

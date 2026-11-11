@@ -1,0 +1,46 @@
+% =============================================================================
+% Plantilla de presentación — Análisis de Señales y Sistemas (UTN FRC)
+% Compilar con:  latexmk            (usa la configuración de latexmkrc)
+%
+% Opciones útiles de la clase:
+%   aspectratio=169 | 43     formato panorámico (por defecto) o 4:3
+%   handout                  versión para imprimir/compartir: colapsa las capas (\pause, <2->)
+% =============================================================================
+\documentclass[aspectratio=169, 11pt]{beamer}
+% \documentclass[aspectratio=169, 11pt, handout]{beamer}
+
+\usetheme{utnfrc}
+\usepackage{senales}
+\usepackage{appendixnumberbeamer}   % las diapositivas del apéndice no suman al total
+
+\usepackage[backend=biber, style=numeric, sorting=nyt]{biblatex}
+\addbibresource{bibliografia.bib}
+
+\input{datos}
+
+\begin{document}
+
+\portada
+
+\begin{frame}{Contenido}
+  \tableofcontents
+\end{frame}
+
+\input{secciones/01-senales}
+\input{secciones/02-sistemas-lti}
+\input{secciones/03-fourier}
+\input{secciones/04-laplace-z}
+\input{secciones/05-cierre}
+
+\begin{frame}[allowframebreaks]{Bibliografía}
+  \nocite{*}
+  \printbibliography[heading=none]
+\end{frame}
+
+\diapositivacierre[nombre.apellido@frc.utn.edu.ar]{¿Preguntas?}
+
+% ------------------------------------------- Diapositivas de respaldo ---
+\appendix
+\input{secciones/A-respaldo}
+
+\end{document}
