@@ -4,7 +4,7 @@
 % (versión reducida, mayo 2026) — https://identidad.frc.utn.edu.ar/
 %
 % Uso:   \usetheme{utnfrc}                (compilar con pdfLaTeX)
-% Datos: \materia{...} \curso{...} \docentes{...} además de \title, \author...
+% Datos: \materia{...} \curso{...} además de \title, \author...
 % =============================================================================
 \NeedsTeXFormat{LaTeX2e}
 \ProvidesPackage{beamerthemeutnfrc}[2026/11/10 Tema UTN FRC]
@@ -82,65 +82,83 @@
 \setbeamertemplate{bibliography item}{\insertbiblabel}
 \setbeamertemplate{caption}[numbered]
 
-% Gradiente oficial: Celeste Asento -> Azul UTN FRC
-\newcommand{\utn@franjagradiente}[1]{% #1 = alto; franja inferior de ancho completo
-  \shade[left color=celeste, right color=azulutn] (0,0) rectangle (\paperwidth,#1);}
+% Franja inferior de ancho completo, color sólido
+% #1 = color (azulutn sobre fondo blanco, celeste sobre fondo azul), #2 = alto
+\newcommand{\utn@franja}[2]{\fill[#1] (0,0) rectangle (\paperwidth,#2);}
 
-% Semicírculos decorativos (inspirados en el análisis morfológico del símbolo)
-\newcommand{\utn@arcos}[1]{% #1 = opacidad base
+% Trama de construcción del símbolo (fondo de https://identidad.frc.utn.edu.ar/,
+% PNG de 2560 x 1480 px con transparencia). Se escala para cubrir la diapositiva,
+% anclada abajo a la derecha (el sobrante se recorta arriba o a la izquierda).
+\newcommand{\utnfondos}{imagenes/fondos/}
+% Escala de la trama: \utn@px = pt por píxel de la imagen
+\newcommand{\utn@escalatrama}{%
+  \pgfmathsetmacro\utn@px{max(\paperwidth/2560, \paperheight/1480)}}
+\newcommand{\utn@trama}{%
+  \utn@escalatrama
+  \pgfmathsetlengthmacro\utn@anchotrama{2560*\utn@px}%
   \begin{scope}
     \clip (0,0) rectangle (\paperwidth,\paperheight);
-    \foreach \r/\o in {3.0/1, 4.3/0.6, 5.6/0.35}
-      \draw[celeste, line width=9pt, opacity=#1*\o] (\paperwidth,0) circle[radius=\r cm];
+    \node[anchor=south east, inner sep=0pt] at (\paperwidth,0)
+      {\includegraphics[width=\utn@anchotrama]{\utnfondos trama-frc}};
   \end{scope}}
 
-% Fondo de las diapositivas normales: blanco, logo reducido arriba a la derecha
+% Fondo de las diapositivas normales: blanco con franja inferior
+% (el logo se dibuja en el título, alineado con el texto y con la línea)
 \setbeamertemplate{background}{%
   \begin{tikzpicture}
     \useasboundingbox (0,0) rectangle (\paperwidth,\paperheight);
-    \node[anchor=north east, inner sep=0pt] at (\paperwidth-0.45cm,\paperheight-0.35cm)
-      {\includegraphics[height=0.62cm]{\utnlogos frc-reducido-azul}};
-    \utn@franjagradiente{2pt}
+    \utn@franja{azulutn}{2pt}
   \end{tikzpicture}}
 
-% Título de diapositiva con línea de gradiente debajo
+% Título de diapositiva: texto a la izquierda, logo reducido a la derecha
+% (centrado verticalmente con la primera línea del título y con su borde
+% derecho alineado al final de la línea que va debajo)
+\newlength{\utn@margentitulo}\setlength{\utn@margentitulo}{0.9cm}
+\newlength{\utn@altologo}\setlength{\utn@altologo}{0.62cm}
 \setbeamertemplate{frametitle}{%
   \vskip0.45cm
-  \begin{beamercolorbox}[wd=\paperwidth, leftskip=0.9cm, rightskip=1.9cm]{frametitle}
-    \usebeamerfont{frametitle}\strut\insertframetitle\strut
-    \ifx\insertframesubtitle\@empty\else
-      \par{\usebeamerfont{framesubtitle}\usebeamercolor[fg]{framesubtitle}\insertframesubtitle\strut}
-    \fi
-  \end{beamercolorbox}
-  \vskip2pt
-  \hbox to \paperwidth{\tikz\shade[left color=celeste, right color=azulutn]
-    (0,0) rectangle (\paperwidth-1.8cm,1.2pt);\hss}
+  \moveleft\beamer@leftmargin\hbox to \paperwidth{\hskip\utn@margentitulo
+    \begin{minipage}[t]{\dimexpr\paperwidth-2\utn@margentitulo-\utn@altologo-1cm\relax}
+      % \leavevmode antes del color: si no, el \special queda primero en la
+      % lista vertical y [t] pierde la línea base del título
+      \usebeamerfont{frametitle}\leavevmode\usebeamercolor[fg]{frametitle}%
+      \strut\insertframetitle\strut
+      \ifx\insertframesubtitle\@empty\else
+        \par{\usebeamerfont{framesubtitle}\usebeamercolor[fg]{framesubtitle}\insertframesubtitle\strut}
+      \fi
+    \end{minipage}\hfill
+    {\usebeamerfont{frametitle}%
+     \raisebox{\dimexpr0.5\fontcharht\font`H-0.5\utn@altologo\relax}%
+       {\includegraphics[height=\utn@altologo]{\utnlogos frc-reducido-azul}}}%
+    \hskip\utn@margentitulo}
+  \vskip4pt
+  \moveleft\beamer@leftmargin\hbox to \paperwidth{\hskip\utn@margentitulo\tikz\fill[azulutn]
+    (0,0) rectangle (\paperwidth-2\utn@margentitulo,1.2pt);\hss}
   \vskip0.15cm}
 % Sin «I, II, ...» en los títulos de diapositivas con allowframebreaks
 \setbeamertemplate{frametitle continuation}{}
 
-% Pie: materia (izq.) · autor (centro) · número de diapositiva (der.)
+% Pie: materia (izq.) · título de la presentación (centro; \title[corto]{...} si es largo) · número de diapositiva (der.)
 \setbeamertemplate{footline}{%
   \usebeamerfont{footline}\usebeamercolor[fg]{footline}%
   \hbox to \paperwidth{%
     \hspace*{0.9cm}\rlap{\utn@materia}\hfill
-    \insertshortauthor\hfill
+    \insertshorttitle\hfill
     \llap{\insertframenumber\,/\,\inserttotalframenumber}\hspace*{0.9cm}}%
   \vskip0.3cm}
 
 % ------------------------------------------------------- Datos de la portada ---
-\def\utn@materia{}\def\utn@curso{}\def\utn@docentes{}
+\def\utn@materia{}\def\utn@curso{}
 \newcommand{\materia}[1]{\def\utn@materia{#1}}
 \newcommand{\curso}[1]{\def\utn@curso{#1}}
-\newcommand{\docentes}[1]{\def\utn@docentes{#1}}
 
 % --------------------------------------------------------------------- Portada ---
 \newcommand{\utn@fondoportada}{%
   \begin{tikzpicture}
     \useasboundingbox (0,0) rectangle (\paperwidth,\paperheight);
     \fill[azuloscuro] (0,0) rectangle (\paperwidth,\paperheight);
-    \utn@arcos{0.22}
-    \utn@franjagradiente{0.22cm}
+    \utn@trama
+    \utn@franja{celeste}{0.22cm}
     \node[anchor=north west, inner sep=0pt] at (0.9cm,\paperheight-0.7cm)
       {\includegraphics[height=1.05cm]{\utnlogos frc-extendido-blanco}};
     \node[anchor=west, inner sep=0pt, text width=0.75\paperwidth, align=left, text=white]
@@ -150,17 +168,26 @@
         \ifx\insertsubtitle\@empty\else
           \vspace{0.35em}{\usebeamerfont{subtitle}\color{celeste}\insertsubtitle\par}
         \fi};
-    \node[anchor=south west, inner sep=0pt, text width=0.7\paperwidth, align=left,
-          text=white, font=\footnotesize] at (0.9cm,0.75cm) {%
-        \ifx\utn@materia\@empty\else
-          {\bfseries\utn@materia}\ifx\utn@curso\@empty\else\ \textperiodcentered\ \utn@curso\fi\par
-        \fi
-        \vspace{0.25em}\insertauthor\par
-        \ifx\utn@docentes\@empty\else
-          {\color{azulclaro}Docentes: \utn@docentes}\par
-        \fi
-        {\color{azulclaro}\insertdate}};
+    % Datos alineados con la franja horizontal de la trama (la barra del
+    % símbolo, filas 1122 y 1224 px desde arriba = 358 y 256 px desde abajo):
+    % materia centrada dentro de la franja; autores y fecha debajo, separados
+    % de la línea inferior lo mismo que la materia lo está de cada línea.
+    \pgfmathsetlengthmacro\utn@franjasup{358*\utn@px}%
+    \pgfmathsetlengthmacro\utn@franjainf{256*\utn@px}%
+    {\footnotesize\global\utn@altomayus=\fontcharht\font`H}%
+    \pgfmathsetlengthmacro\utn@holgura{(\utn@franjasup-\utn@franjainf-\utn@altomayus)/2}%
+    \ifx\utn@materia\@empty\else
+      \node[anchor=base west, inner sep=0pt, text=white, font=\footnotesize]
+        at (0.9cm,\utn@franjainf+\utn@holgura-1mm) {%
+          {\bfseries\utn@materia}\ifx\utn@curso\@empty\else\ \textperiodcentered\ \utn@curso\fi};
+    \fi
+    \node[anchor=base west, inner sep=0pt, text=white, font=\footnotesize]
+      at (0.9cm,\utn@franjainf-\utn@holgura-\utn@altomayus) {%
+        \parbox[t]{0.7\paperwidth}{\raggedright\leavevmode
+          \insertauthor\par
+          {\color{azulclaro}\insertdate}}};
   \end{tikzpicture}}
+\newlength{\utn@altomayus}
 
 \newcommand{\portada}{%
   {\setbeamertemplate{background}{\utn@fondoportada}%
@@ -170,16 +197,21 @@
 \newcommand{\utn@fondoseccion}{%
   \begin{tikzpicture}
     \useasboundingbox (0,0) rectangle (\paperwidth,\paperheight);
-    \fill[azulutn] (0,0) rectangle (\paperwidth,\paperheight);
-    \utn@arcos{0.25}
-    \utn@franjagradiente{0.22cm}
-    \node[anchor=north east, inner sep=0pt] at (\paperwidth-0.6cm,\paperheight-0.5cm)
-      {\includegraphics[height=0.8cm]{\utnlogos frc-reducido-blanco}};
+    \fill[azuloscuro] (0,0) rectangle (\paperwidth,\paperheight); % mismo fondo que la portada
+    \utn@trama
+    \utn@franja{celeste}{0.22cm}
+    % Nombre de la sección apoyado sobre la línea horizontal superior de la
+    % trama (fila 867 px desde arriba = 613 px desde abajo), con \utn@separacionseccion
+    % de aire; el número va encima. Si el nombre ocupa dos líneas, crece hacia arriba.
+    \pgfmathsetlengthmacro\utn@lineaseccion{613*\utn@px}%
+    \node[anchor=south west, inner sep=0pt, text=white, text width=0.75\paperwidth, align=left]
+      (utn@nombreseccion) at (0.9cm,\utn@lineaseccion+\utn@separacionseccion)
+      {\usebeamerfont{section title}\hyphenpenalty=10000 \insertsectionhead\par};
     \node[anchor=south west, inner sep=0pt, text=celeste, font=\fontsize{54}{54}\selectfont\bfseries]
-      at (0.9cm,0.5\paperheight) {\two@digits{\insertsectionnumber}};
-    \node[anchor=north west, inner sep=0pt, text=white, text width=0.75\paperwidth, align=left]
-      at (0.9cm,0.5\paperheight-0.25cm) {\usebeamerfont{section title}\hyphenpenalty=10000 \insertsectionhead\par};
+      at ([yshift=0.25cm]utn@nombreseccion.north west) {\two@digits{\insertsectionnumber}};
   \end{tikzpicture}}
+% Distancia entre la línea de la trama y el nombre de la sección (ajustable)
+\newlength{\utn@separacionseccion}\setlength{\utn@separacionseccion}{0.35cm}
 
 \AtBeginSection{%
   {\setbeamertemplate{background}{\utn@fondoseccion}%
@@ -192,8 +224,8 @@
     \begin{tikzpicture}
       \useasboundingbox (0,0) rectangle (\paperwidth,\paperheight);
       \fill[azuloscuro] (0,0) rectangle (\paperwidth,\paperheight);
-      \utn@arcos{0.22}
-      \utn@franjagradiente{0.22cm}
+      \utn@trama
+      \utn@franja{celeste}{0.22cm}
       \node[anchor=south, inner sep=0pt] at (0.5\paperwidth,0.47\paperheight)
         {\includegraphics[height=2.6cm]{\utnlogos frc-vertical-blanco}};
       \node[anchor=north, text=white, font=\huge\bfseries] at (0.5\paperwidth,0.4\paperheight) {#2};

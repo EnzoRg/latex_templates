@@ -10,7 +10,7 @@ UTN FRC: logos, paleta y tipografía del [Manual de Identidad Visual](https://id
 ```bash
 cp -r plantilla_presentacion ~/ruta/nueva-presentacion
 cd ~/ruta/nueva-presentacion
-# editar datos.tex (título, materia, curso, autores, docentes, fecha)
+# editar datos.tex (título, materia, curso, autores, fecha)
 latexmk            # genera build/main.pdf
 latexmk -pvc       # recompila automáticamente al guardar
 latexmk -c         # borra archivos auxiliares
@@ -29,6 +29,7 @@ senales.sty              # notación de señales y sistemas + estilos TikZ/pgfpl
 secciones/               # un archivo por sección (01-senales.tex, ...) y A-respaldo.tex
 bibliografia.bib         # referencias (biblatex + biber, numérico)
 imagenes/logos/          # logos oficiales UTN FRC en PDF vectorial
+imagenes/fondos/         # trama del símbolo para portada, separadores y cierre (identidad.frc.utn.edu.ar)
 latexmkrc                # compilación: pdflatex + biber, salida en build/
 ```
 
@@ -46,7 +47,7 @@ En `main.tex`: `\documentclass[aspectratio=169, 11pt]{beamer}`
 
 | Necesidad | Cómo |
 |---|---|
-| Portada | `\portada` (usa `\title`, `\subtitle`, `\author`, `\materia`, `\curso`, `\docentes`, `\date`) |
+| Portada | `\portada` (usa `\title`, `\subtitle`, `\author`, `\materia`, `\curso`, `\date`) |
 | Separador de sección | Automático en cada `\section{...}` (número grande + título) |
 | Cierre | `\diapositivacierre[correo o URL]{¿Preguntas?}` |
 | Bloques | `definicion`, `teorema`, `propiedad`, `ejemplo`, `importante`, `observacion`; título opcional: `\begin{teorema}[Parseval]` |
@@ -99,7 +100,8 @@ celeste). Las funciones trigonométricas de pgfplots trabajan en grados: `sin(de
   Extendida Facultad, Reducida y Reducida Vertical) y convertidos a PDF con Inkscape. No deben
   deformarse ni recolorearse; para fondos oscuros se usan las versiones blancas.
 - **Colores:** paleta primaria (azules), secundaria (celestes), neutros y complementarios del
-  manual; el gradiente oficial va de Celeste Asento `#40C5F2` a Azul UTN FRC `#1538B8`.
+  manual. Las franjas y líneas usan colores sólidos: Azul UTN FRC `#1538B8` sobre fondo
+  blanco y Celeste Asento `#40C5F2` sobre fondo azul (sin gradientes).
 - **Tipografía:** el manual indica **Barlow** para textos generales y **Noto Sans** para títulos
   y textos destacados. La plantilla usa Noto Sans en todo el documento porque tiene una fuente
   matemática del mismo diseño (`notomath`) que funciona con pdfLaTeX. Barlow no tiene versión
